@@ -1,6 +1,6 @@
 # lumatrix
 
-A Lua-scriptable LED matrix daemon for the [Framework 16](https://frame.work/products/laptop16-diy-amd-7040) LED Matrix Input Module.
+A Lua-scriptable LED matrix daemon for the Framework LED Matrix Input Module.
 
 ## Requirements
 
@@ -32,25 +32,6 @@ The daemon auto-detects the LED matrix. Options:
 | `--device <path>` | auto | Serial device, e.g. `/dev/ttyACM0`. Auto-detected if omitted. |
 | `--brightness <0-255>` | `200` | Maximum brightness. A pixel value of 255 in a module maps to this level on the hardware. |
 | `--min-interval-ms <ms>` | `30` | Minimum frame interval in milliseconds. 30ms is the hardware limit imposed by the LED controller. |
-
-Run as a systemd user service by creating `~/.config/systemd/user/lumatrix.service`:
-
-```ini
-[Unit]
-Description=lumatrix LED matrix daemon
-After=graphical-session.target
-
-[Service]
-ExecStart=%h/.cargo/bin/lumatrix daemon --device /dev/ttyACM0
-Restart=on-failure
-
-[Install]
-WantedBy=graphical-session.target
-```
-
-```bash
-systemctl --user enable --now lumatrix
-```
 
 ## Commands
 
