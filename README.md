@@ -7,8 +7,6 @@ A Lua-scriptable LED matrix daemon for the Framework LED Matrix Input Module.
 - Framework laptop with [LED Matrix Input Module](https://frame.work/products/16-led-matrix)
 - Linux
 - Rust toolchain (`rustup.rs`)
-- `pactl` (PulseAudio / PipeWire) for volume readout in the `system` module
-- D-Bus session for desktop notification alerts in the `system` module
 
 ## Build & install
 
@@ -42,7 +40,6 @@ All commands (except `daemon`, `devices`, and `debug`) communicate with a runnin
 Switch to a module by name. Built-in modules:
 
 ```bash
-lumatrix load system       # system metrics (CPU, memory, battery, volume)
 lumatrix load rain         # rain animation
 lumatrix load firework     # fireworks
 lumatrix load stars        # twinkling stars
@@ -156,23 +153,6 @@ When `is_done()` returns `true` the daemon replaces the module with a blank disp
 
 The frame is cleared at the start of each tick. Any pixels you do not set remain off.
 
-### The `system` global
-
-Provides cached system metrics updated in the background:
-
-| Call | Returns |
-|------|---------|
-| `system.cpu_pct()` | CPU utilization, 0.0–100.0 |
-| `system.mem_pct()` | Memory utilization, 0.0–100.0 |
-| `system.battery_pct()` | Battery level, 0.0–100.0 |
-| `system.is_charging()` | `true` if the battery is charging |
-| `system.volume_pct()` | Audio output volume, 0.0–100.0 |
-| `system.disk_read_bps()` | Disk read throughput in bytes/sec |
-| `system.disk_write_bps()` | Disk write throughput in bytes/sec |
-| `system.net_rx_bps()` | Network receive throughput in bytes/sec |
-| `system.net_tx_bps()` | Network transmit throughput in bytes/sec |
-| `system.alert_remaining_ms()` | Milliseconds remaining on an active desktop notification alert, or 0 |
-
 ### The `args` global
 
 Arguments passed on the command line after the module name are available as a 1-indexed table of strings:
@@ -272,9 +252,9 @@ Single-frame snapshots captured with `lumatrix debug <name> --frames N`
 ```
     ██    ██    ██
       ▒▒  ▒▒  ▒▒
-  ██    ░░░░░░
+        ░░░░░░
   ▒▒██▒▒░░  ░░▒▒██
-  ░░▒▒  ░░░░░░
+        ░░░░░░
     ░░▒▒  ▒▒  ▒▒
     ██    ██    ██
     ░░
