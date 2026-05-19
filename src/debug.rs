@@ -5,7 +5,7 @@ use std::{
 
 use crate::{frame, module::ModuleRegistry};
 
-pub fn run(module_name: &str, args: &[String], registry: &ModuleRegistry) -> anyhow::Result<()> {
+pub fn run(module_name: &str, args: &[String], max_frames: Option<u64>, registry: &ModuleRegistry) -> anyhow::Result<()> {
     let mut module = if module_name.starts_with('/') || module_name.starts_with('.') || module_name.ends_with(".lua") {
         registry.get_from_path(&std::path::PathBuf::from(module_name), args)
             .map_err(|e| anyhow::anyhow!("{}", e))?
@@ -31,16 +31,72 @@ pub fn run(module_name: &str, args: &[String], registry: &ModuleRegistry) -> any
     println!("frame:    {}×{}", frame::COLS, frame::ROWS);
     println!("Ctrl+C to stop\n");
 
-    // hide cursor
-    print!("\x1B[?25l");
-
-    let result = run_loop(module.as_mut(), interval);
-
-    // restore cursor
-    print!("\x1B[?25h\n");
-    std::io::stdout().flush().ok();
+    let result = if let Some(n) = max_frames {
+        run_batch(module.as_mut(), interval, n)
+    } else {
+        // hide cursor
+        print!("\x1B[?25l");
+        let r = run_loop(module.as_mut(), interval);
+        // restore cursor
+        print!("\x1B[?25h\n");
+        std::io::stdout().flush().ok();
+        r
+    };
 
     result
+}
+
+fn run_batch(
+    module: &mut dyn crate::module::Module,
+    interval: Duration,
+    max_frames: u64,
+) -> anyhow::Result<()> {
+    let mut last_tick = Instant::now();
+    let stdout = std::io::stdout();
+
+    for frame_num in 1..=max_frames {
+        std::thread::sleep(interval);
+
+        let dt = last_tick.elapsed();
+        last_tick = Instant::now();
+
+        let redraw = module.update(dt);
+        let mut frame = crate::frame::Frame::new();
+        if redraw {
+            module.render(&mut frame);
+        }
+
+        let bytes = frame.as_bytes();
+        let mut out = stdout.lock();
+
+        writeln!(
+            out,
+            "frame {:5} | dt {:4}ms | fps {:4.1} | redraw: {}",
+            frame_num,
+            dt.as_millis(),
+            1000.0 / dt.as_millis() as f64,
+            redraw
+        )?;
+
+        for row in 0..frame::ROWS {
+            for col in 0..frame::COLS {
+                let b = bytes[row * frame::COLS + col];
+                let cell = match b {
+                    0        => "  ",
+                    1..=50   => "░░",
+                    51..=120  => "▒▒",
+                    121..=200 => "▓▓",
+                    _        => "██",
+                };
+                out.write_all(cell.as_bytes())?;
+            }
+            out.write_all(b"\n")?;
+        }
+        out.write_all(b"\n")?;
+        out.flush()?;
+    }
+
+    Ok(())
 }
 
 fn run_loop(

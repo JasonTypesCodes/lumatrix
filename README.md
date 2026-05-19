@@ -4,7 +4,7 @@ A Lua-scriptable LED matrix daemon for the Framework LED Matrix Input Module.
 
 ## Requirements
 
-- Framework laptop with LED Matrix Input Module
+- Framework laptop with [LED Matrix Input Module](https://frame.work/products/16-led-matrix)
 - Linux
 - Rust toolchain (`rustup.rs`)
 - `pactl` (PulseAudio / PipeWire) for volume readout in the `system` module
@@ -101,6 +101,13 @@ Run a module in the terminal without hardware. Renders the frame as ASCII art an
 lumatrix debug rain
 lumatrix debug hourglass 10
 lumatrix debug /path/to/mymodule.lua
+```
+
+Pass `--frames N` to stop after N frames and exit (useful for capturing snapshots):
+
+```bash
+lumatrix debug stars --frames 10
+lumatrix debug hourglass --frames 25 5   # 5-second timer, capture at frame 25
 ```
 
 ## Writing a module
@@ -226,6 +233,90 @@ Save this as `~/.config/lumatrix/modules/bouncer.lua` and run:
 ```bash
 lumatrix load bouncer
 lumatrix load bouncer 3
+```
+
+## Animations
+
+Single-frame snapshots captured with `lumatrix debug <name> --frames N`
+(`█` = full brightness; `▓▒░` = dimmer; space = off).
+
+**stars** — sparse twinkling field at random brightnesses
+
+```
+            ▓▓
+            ░░
+    ░░
+▒▒
+              ██
+            ▓▓
+▒▒  ▓▓
+            ░░
+      ░░  ░░  ░░
+    ░░    ░░
+▓▓    ░░░░▓▓░░░░
+          ░░
+▒▒    ░░  ░░  ░░
+  ░░    ▒▒
+            ▓▓
+      ░░
+  ▓▓        ▒▒
+    ▓▓
+          ░░    ▒▒
+    ▒▒
+          ▓▓
+  ░░  ░░        ▒▒
+```
+
+**firework** — rockets launch and burst with fading radial sparks
+
+```
+    ██    ██    ██
+      ▒▒  ▒▒  ▒▒
+  ██    ░░░░░░
+  ▒▒██▒▒░░  ░░▒▒██
+  ░░▒▒  ░░░░░░
+    ░░▒▒  ▒▒  ▒▒
+    ██    ██    ██
+    ░░
+```
+
+**hourglass** — sand drains from top to bottom; checkmark appears when done
+
+```
+██              ██
+██              ██
+██              ██
+  ██          ██
+  ██          ██
+  ██          ██
+  ██          ██
+  ██          ██
+    ██      ██
+    ██▒▒▒▒▒▒██
+    ██▒▒▒▒▒▒██
+    ██▒▒▒▒▒▒██
+    ██▒▒▒▒▒▒██
+    ██▒▒▒▒▒▒██
+      ██  ██
+      ██  ██
+      ██  ██
+      ██  ██
+      ██  ██
+      ██  ██
+    ██      ██
+    ██      ██
+    ██      ██
+    ██      ██
+    ██      ██
+    ██▒▒▒▒▒▒██
+  ██▒▒▒▒▒▒▒▒▒▒██
+  ██▒▒▒▒▒▒▒▒▒▒██
+  ██▒▒▒▒▒▒▒▒▒▒██
+  ██▒▒▒▒▒▒▒▒▒▒██
+  ██▒▒▒▒▒▒▒▒▒▒██
+██▒▒▒▒▒▒▒▒▒▒▒▒▒▒██
+██▒▒▒▒▒▒▒▒▒▒▒▒▒▒██
+██▒▒▒▒▒▒▒▒▒▒▒▒▒▒██
 ```
 
 ## License

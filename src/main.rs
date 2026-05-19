@@ -61,6 +61,9 @@ enum Command {
     /// Run a module locally and print timing + frame to terminal (no hardware needed)
     Debug {
         name: String,
+        /// Stop after this many frames and exit (useful for capturing snapshots)
+        #[arg(long)]
+        frames: Option<u64>,
         /// Arguments passed to the module as args[1], args[2], … in Lua
         #[arg(trailing_var_arg = true, num_args = 0..)]
         args: Vec<String>,
@@ -102,9 +105,9 @@ async fn main() -> anyhow::Result<()> {
             client::send_command(&format!("brightness {}", value)).await
         }
         Command::Modules => client::send_command("modules").await,
-        Command::Debug { name, args } => {
+        Command::Debug { name, frames, args } => {
             let registry = module::ModuleRegistry::new();
-            debug::run(&name, &args, &registry)
+            debug::run(&name, &args, frames, &registry)
         }
     }
 }
