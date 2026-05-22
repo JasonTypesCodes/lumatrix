@@ -6,7 +6,7 @@ A Lua-scriptable LED matrix daemon for the Framework LED Matrix Input Module.
 
 - Framework laptop with [LED Matrix Input Module](https://frame.work/products/16-led-matrix)
 - Linux
-- Rust toolchain (`rustup.rs`)
+- Rust toolchain
 
 ## Build & install
 
@@ -40,6 +40,8 @@ All commands (except `daemon`, `devices`, and `debug`) communicate with a runnin
 Switch to a module by name. Built-in modules:
 
 ```bash
+lumatrix load clock        # current time (HH:MM sideways)
+lumatrix load play lmx/diamond.lmx         # play a hand-authored animation file
 lumatrix load rain         # rain animation
 lumatrix load firework     # fireworks
 lumatrix load stars        # twinkling stars
@@ -105,6 +107,54 @@ Pass `--frames N` to stop after N frames and exit (useful for capturing snapshot
 ```bash
 lumatrix debug stars --frames 10
 lumatrix debug hourglass --frames 25 5   # 5-second timer, capture at frame 25
+```
+
+## Animation files
+
+The `play` module plays hand-authored animation files (`.lmx`). Each file is
+plain text: a short header followed by one or more frames delimited by `---`.
+
+**Header** (before the first `---`):
+
+```
+# comment
+fps 10      # frames per second (default: 10)
+ms 100      # alternative: milliseconds per frame
+loop no     # disable looping (default: loops forever)
+```
+
+**Frames:**
+
+```
+---
+
+  #####
+ #     #
+#       #
+```
+
+One character per LED column (9 max). Rows shorter than 9 are padded with
+spaces. Frames with fewer than 34 rows are padded with blank rows.
+
+**Brightness characters:**
+
+| Char | Brightness |
+|------|------------|
+| ` `  | 0 (off)    |
+| `.`  | 50         |
+| `+`  | 120        |
+| `#`  | 200        |
+| `@`  | 255 (full) |
+
+**Minimal example** — two-frame blink at 2 fps:
+
+```
+fps 2
+---
+#########
+#########
+#########
+---
 ```
 
 ## Writing a module
