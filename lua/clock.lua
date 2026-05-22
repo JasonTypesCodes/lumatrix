@@ -8,12 +8,13 @@
 --   rows  5– 9  H1 (tens of hours)
 --   row  10      gap
 --   rows 11–15  H2 (units of hours)
---   row  16      colon (two pixels, blinking)
---   row  17      gap
---   rows 18–22  M1 (tens of minutes)
---   row  23      gap
---   rows 24–28  M2 (units of minutes)
---   rows 29–33  padding
+--   row  16      gap
+--   row  17      colon (two pixels, blinking)
+--   row  18      gap
+--   rows 19–23  M1 (tens of minutes)
+--   row  24      gap
+--   rows 25–29  M2 (units of minutes)
+--   rows 30–33  padding
 
 -- 5×7 bitmaps: DIGITS[d][char_row][char_col], both 1-indexed.
 -- char_row 1 = top of digit, char_row 7 = bottom.
@@ -135,12 +136,12 @@ function tick(dt_ms, frame)
 
     draw_digit(frame,  5, math.floor(h / 10))
     draw_digit(frame, 11, h % 10)
-    draw_digit(frame, 18, math.floor(m / 10))
-    draw_digit(frame, 24, m % 10)
+    draw_digit(frame, 19, math.floor(m / 10))
+    draw_digit(frame, 25, m % 10)
 
     if os.time() % 2 == 0 then
-        frame:set(16, 6, BRIGHTNESS)
-        frame:set(16, 2, BRIGHTNESS)
+        frame:set(17, 6, BRIGHTNESS)
+        frame:set(17, 2, BRIGHTNESS)
     end
 
     return true
